@@ -1,0 +1,50 @@
+name: Validate ML notebook
+
+on:
+  push:
+    paths:
+      - "vanshnain-24570087.ipynb"
+      - "crop_yield.csv"
+      - "requirements.txt"
+      - ".github/workflows/validate-notebook.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  execute-notebook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install nbconvert ipykernel
+
+      - name: Execute notebook from top to bottom
+        run: |
+          jupyter nbconvert --to notebook --execute vanshnain-24570087.ipynb --output executed-notebook.ipynb --ExecutePreprocessor.timeout=2400
+
+      - name: Upload executed notebook and generated evaluation outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-project-evaluation
+          path: |
+            executed-notebook.ipynb
+            crop_yield_test_predictions.csv
+            crop_yield_model_comparison.csv
+            crop_yield_temporal_cv_results.csv
+            crop_yield_run_metadata.json
+          if-no-files-found: warn
