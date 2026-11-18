@@ -11,7 +11,7 @@ The notebook expects a CSV file named `crop_yield.csv` with these columns:
 - `Crop`, `Crop_Year`, `Season`, `State`
 - `Area`, `Production`, `Annual_Rainfall`, `Fertilizer`, `Pesticide`, `Yield`
 
-The notebook's recorded run used 19,689 rows, 10 columns and years 1997–2020. **The CSV is not currently committed in this repository**, so download/obtain the dataset separately and place it beside the notebook before running. Do not assume the historical row count will match a different copy of the dataset.
+The dataset file `crop_yield.csv` is now included in this repository. The notebook's earlier recorded run used 19,689 rows, 10 columns and years 1997–2020. Re-run the notebook against the committed CSV to confirm the current dataset's shape and year range.
 
 ## Workflow
 1. Load and inspect the CSV.
@@ -53,7 +53,7 @@ ROC curves are classification diagnostics and are not appropriate for this conti
 
 ## Run locally or in Google Colab
 1. Clone or download this repository.
-2. Obtain the dataset separately and place `crop_yield.csv` in the notebook's working directory (or upload it in Colab).
+2. Keep `crop_yield.csv` in the notebook's working directory (or upload it in Colab).
 3. Install dependencies:
 
    ```bash
