@@ -1,84 +1,81 @@
 # Crop Yield Prediction Using Machine Learning
 
-## Project Overview
-This project focuses on predicting crop yield using
-Machine Learning regression algorithms.
+## Project overview
+This project explores crop-yield prediction with supervised machine-learning **regression** models. The notebook uses crop, season, state, cultivated area, annual rainfall, fertiliser and pesticide inputs to estimate yield.
 
-The project uses agricultural features such as crop,
-season, state, area, annual rainfall, fertilizer and
-pesticide usage to predict crop yield.
+The analysis is predictive and descriptive. It does not establish causal effects of agricultural inputs.
 
 ## Dataset
-- Total Records: 19,689
-- Total Columns: 10
-- Year Range: 1997–2020
-- Target Variable: Yield
+The notebook expects a CSV file named `crop_yield.csv` with these columns:
 
-## Machine Learning Models
-1. Multiple Linear Regression
-2. Polynomial Regression
-3. Ridge Regression
-4. Lasso Regression
-5. Decision Tree Regressor
-6. K-Nearest Neighbors Regressor
+- `Crop`, `Crop_Year`, `Season`, `State`
+- `Area`, `Production`, `Annual_Rainfall`, `Fertilizer`, `Pesticide`, `Yield`
 
-## Data Preprocessing
-- Missing value inspection
-- Duplicate removal
-- Numerical data conversion
-- Outlier treatment
-- Median imputation
-- Standard scaling
-- One-hot encoding
+The notebook's recorded run used 19,689 rows, 10 columns and years 1997–2020. **The CSV is not currently committed in this repository**, so download/obtain the dataset separately and place it beside the notebook before running. Do not assume the historical row count will match a different copy of the dataset.
 
-## Model Evaluation
-Models are evaluated using:
-- RMSE
-- MAE
-- R² Score
+## Workflow
+1. Load and inspect the CSV.
+2. Clean column names and categorical values; inspect missing values and duplicates.
+3. Remove exact duplicates and rows without a usable year/target; treat invalid negative input values as missing.
+4. Explore yield distributions, yearly patterns and seasonal summaries.
+5. Split chronologically: training data through 2015 and a final hold-out test set from 2016 onward.
+6. Fit preprocessing inside scikit-learn pipelines. Numeric values are imputed, clipped using training-fitted quantiles and scaled; categorical values are imputed and one-hot encoded.
+7. Compare regression models and a median dummy baseline.
+8. Use expanding-window temporal cross-validation on training years only. Tune the Decision Tree with GridSearchCV using those same time-ordered folds.
+9. Select the model using temporal cross-validation, then report final hold-out metrics on 2016–2020.
+10. Inspect actual-versus-predicted values, residuals, input-intensity associations, state-level summaries and permutation feature importance.
 
-The dataset is divided using a time-based split:
-- Training: 1997–2015
-- Testing: 2016–2020
+## Models
+- Median Dummy Regressor (baseline)
+- Multiple Linear Regression
+- Polynomial Regression (degree 2)
+- Ridge Regression
+- Lasso Regression
+- Decision Tree Regressor
+- k-Nearest Neighbours Regressor
+- Tuned Decision Tree Regressor (GridSearchCV)
 
-## Additional Analysis
-- Exploratory Data Analysis
-- Actual vs Predicted Yield
-- Residual Analysis
-- Fertilizer and Pesticide Analysis
-- State-level Yield Analysis
-- Permutation Feature Importance
+## Validation and metrics
+- **Final hold-out:** chronological split, training years 1997–2015 and test years 2016–2020 for the recorded dataset.
+- **Cross-validation:** expanding-window folds constructed from training years only; validation periods always occur after their corresponding training periods.
+- **Tuning:** Decision Tree hyperparameters are selected using only the temporal CV folds. The final hold-out is not used for tuning or model selection.
+- **Regression metrics:** RMSE, MAE and R². MAE is also used as the temporal-CV selection score after converting predictions back to the original yield scale.
 
-## Technologies Used
-- Python
-- Google Colab
-- NumPy
-- Pandas
-- Matplotlib
-- Seaborn
-- Scikit-learn
+ROC curves are classification diagnostics and are not appropriate for this continuous regression target. The notebook therefore reports regression metrics and regression diagnostics instead.
 
-## How to Run
-1. Clone this repository.
-2. Install dependencies:
+## Additional analysis
+- Yield distributions and yearly/seasonal summaries
+- Actual vs. predicted yield and residual distribution
+- Fertiliser/pesticide input intensity per area
+- State-level descriptive summaries
+- Permutation feature importance
+- Export of test predictions and model-comparison tables
 
+## Run locally or in Google Colab
+1. Clone or download this repository.
+2. Obtain the dataset separately and place `crop_yield.csv` in the notebook's working directory (or upload it in Colab).
+3. Install dependencies:
+
+   ```bash
    pip install -r requirements.txt
+   ```
 
-3. Open the notebook using Google Colab
-   or Jupyter Notebook.
-4. Upload crop_yield.csv when prompted.
-5. Run all notebook cells.
+4. Open `vanshnain-24570087.ipynb` in Jupyter Notebook, JupyterLab or Google Colab.
+5. Run all cells from top to bottom.
 
-## Project Files
-- vanshnain-24570087.ipynb
-- requirements.txt
-- crop_yield.csv
-- README.md
+The notebook saves `crop_yield_test_predictions.csv` and `crop_yield_model_comparison.csv` after a successful run.
+
+## Repository files
+- `vanshnain-24570087.ipynb` — complete analysis and modelling workflow
+- `requirements.txt` — Python dependencies
+- `README.md` — project documentation
 
 ## Limitations
-The analysis is based on historical agricultural
-data. Results do not establish causal relationships
-between agricultural inputs and crop yield.
+- Results depend on the dataset version and its coverage.
+- A chronological hold-out tests later years in the available data; it does not guarantee performance in every region or future season.
+- Aggregated observational data can contain confounding factors and measurement limitations.
+- Input/yield relationships are associations, not causal estimates.
+- Model metrics should be interpreted in the original yield units and in the context of the dataset.
 
 ## Author
 Vansh Nain
